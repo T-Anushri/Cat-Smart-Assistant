@@ -31,6 +31,8 @@ const OperatorView = () => {
   const [tasks, setTasks] = useState<any[]>([]);
   const [tasksLoading, setTasksLoading] = useState(false);
   const [tasksError, setTasksError] = useState("");
+  // Predicted durations for each task (by task._id)
+  const [predictedDurations, setPredictedDurations] = useState<{ [taskId: string]: number }>({});
 
   // Popup alert state
   const [safetyAlerts, setSafetyAlerts] = useState([
@@ -40,6 +42,15 @@ const OperatorView = () => {
   const [popupAlert, setPopupAlert] = useState<null | { message: string; type: string }>(null);
   const [lastAlertMessage, setLastAlertMessage] = useState<string | null>(null);
   const popupTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const speechIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const speakRef = useRef<{ interval: NodeJS.Timeout | null }>({ interval: null });
+
+  const speak = (text: string) => {
+    window.speechSynthesis.cancel();
+    const utterance = new window.SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    window.speechSynthesis.speak(utterance);
+  };
 
   // Telemetry/Chart state (simulate for now)
   const [fuelConsumption, setFuelConsumption] = useState(68);
@@ -94,10 +105,63 @@ const OperatorView = () => {
     }
   }, [token]);
 
+  // Fetch predicted durations for each task automatically
+  useEffect(() => {
+    // Allowed values from CSV
+    const allowedWeather = ["Cloudy", "Rainy", "Sunny", "Foggy"];
+    const allowedTaskTypes = ["Leveling", "Transporting", "Drilling", "Lifting", "Digging"];
+
+    // Helper to map or fallback to valid value
+    const getValidWeather = (w) => {
+      if (typeof w === "string" && allowedWeather.includes(w)) return w;
+      // Try case-insensitive match
+      const found = allowedWeather.find(v => v.toLowerCase() === String(w).toLowerCase());
+      return found || "Sunny";
+    };
+    const getValidTaskType = (t) => {
+      if (typeof t === "string" && allowedTaskTypes.includes(t)) return t;
+      // Try case-insensitive match or fallback to title
+      const found = allowedTaskTypes.find(v => v.toLowerCase() === String(t).toLowerCase());
+      return found || "Digging";
+    };
+
+    const fetchPredictions = async () => {
+      if (!tasks || tasks.length === 0) {
+        setPredictedDurations({});
+        return;
+      }
+      const newPredictions: { [taskId: string]: number } = {};
+      for (const task of tasks) {
+        // Validate and map to allowed values
+        const weather = getValidWeather(task.weather);
+        // Try type, then title, then fallback
+        let taskType = getValidTaskType(task.type);
+        if (!allowedTaskTypes.includes(taskType) && task.title) {
+          taskType = getValidTaskType(task.title);
+        }
+        try {
+          const res = await fetch("http://localhost:4000/api/predict-task-duration", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ weather, taskType })
+          });
+          const data = await res.json();
+          if (data.predictedTime) {
+            newPredictions[task._id] = data.predictedTime;
+          }
+        } catch (e) {
+          // Optionally handle error
+        }
+      }
+      setPredictedDurations(newPredictions);
+    };
+    fetchPredictions();
+  }, [tasks]);
+
   // Fetch live alert from backend (mock or real)
   useEffect(() => {
     const interval = setInterval(() => {
-      fetch("http://localhost:3000/api/alert")
+      fetch("http://localhost:4000/api/alert")
         .then((res) => res.json())
         .then((data) => {
           if (
@@ -107,6 +171,10 @@ const OperatorView = () => {
           ) {
             setPopupAlert({ message: data.message, type: "warning" });
             setLastAlertMessage(data.message);
+            // Start repeating speech when popup appears
+            if (speechIntervalRef.current) clearInterval(speechIntervalRef.current);
+            speak(data.message);
+            speechIntervalRef.current = setInterval(() => speak(data.message), 2000);
             if (popupTimeoutRef.current) clearTimeout(popupTimeoutRef.current);
             popupTimeoutRef.current = setTimeout(() => {
               setPopupAlert(null);
@@ -125,11 +193,53 @@ const OperatorView = () => {
         })
         .catch(err => console.error("Failed to fetch alert:", err));
     }, 5000);
+
     return () => {
       clearInterval(interval);
       if (popupTimeoutRef.current) clearTimeout(popupTimeoutRef.current);
+      if (speechIntervalRef.current) clearInterval(speechIntervalRef.current);
+      window.speechSynthesis.cancel();
     };
   }, [lastAlertMessage]);
+
+  // Stop speech when popup closes (OK or auto-close)
+  useEffect(() => {
+    if (!popupAlert) {
+      if (speechIntervalRef.current) clearInterval(speechIntervalRef.current);
+      window.speechSynthesis.cancel();
+    }
+  }, [popupAlert]);
+
+  useEffect(() => {
+    if (popupAlert) {
+      // Stop any ongoing speech
+      window.speechSynthesis.cancel();
+      // Speak immediately
+      const speakNow = () => {
+        window.speechSynthesis.cancel();
+        const utterance = new window.SpeechSynthesisUtterance(popupAlert.message);
+        utterance.lang = "en-US";
+        window.speechSynthesis.speak(utterance);
+      };
+      speakNow();
+      // Repeat every 2.5s
+      speakRef.current.interval = setInterval(speakNow, 2500);
+    } else {
+      // Stop speech and clear interval
+      window.speechSynthesis.cancel();
+      if (speakRef.current.interval) {
+        clearInterval(speakRef.current.interval);
+        speakRef.current.interval = null;
+      }
+    }
+    return () => {
+      window.speechSynthesis.cancel();
+      if (speakRef.current.interval) {
+        clearInterval(speakRef.current.interval);
+        speakRef.current.interval = null;
+      }
+    };
+  }, [popupAlert]);
 
   // Simulate real-time updates for telemetry
   useEffect(() => {
@@ -187,6 +297,12 @@ const OperatorView = () => {
                 return prev;
               });
               setLastAlertMessage(popupAlert.message);
+              // Stop speech and clear interval
+              window.speechSynthesis.cancel();
+              if (speakRef.current.interval) {
+                clearInterval(speakRef.current.interval);
+                speakRef.current.interval = null;
+              }
             }}
           >
             OK
@@ -285,6 +401,11 @@ const OperatorView = () => {
                         <div className="flex items-center space-x-2 text-sm">
                           <Clock className="w-4 h-4" />
                           <span>{task.timeEstimate}</span>
+                        </div>
+                      )}
+                      {predictedDurations[task._id] !== undefined && (
+                        <div className="text-sm text-blue-600 mt-1">
+                          Predicted Duration: {predictedDurations[task._id].toFixed(2)} min
                         </div>
                       )}
                     </div>

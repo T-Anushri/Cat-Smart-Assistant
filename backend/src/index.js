@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import predictRoute from "../routes/predict.js";
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ import incidentRoutes from "./routes/incident.js";
 app.use("/api/tasks", taskRoutes);
 app.use("/api/operators", operatorRoutes);
 app.use("/api/incidents", incidentRoutes);
+app.use("/api", predictRoute);
 
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`);

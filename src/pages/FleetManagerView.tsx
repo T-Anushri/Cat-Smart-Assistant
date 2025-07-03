@@ -18,8 +18,6 @@ const FleetManagerView = () => {
     operatorId: "",
     name: "",
     fuelEfficiency: 80,
-    estimatedTime: 8,
-    actualTime: 8,
     safetyViolations: 0,
     tasksCompleted: 0,
     trainingCompleted: false
@@ -98,10 +96,11 @@ const FleetManagerView = () => {
     e.preventDefault();
     setAdding(true);
     try {
+      // Use only available fields for score (set timeScore to 100 by default)
       const score = calculateScore({
         fuelEfficiency: newOperator.fuelEfficiency,
-        estimatedTime: newOperator.estimatedTime,
-        actualTime: newOperator.actualTime,
+        estimatedTime: 1, // dummy value, not used
+        actualTime: 1,    // dummy value, not used
         safetyViolations: newOperator.safetyViolations
       });
       const operatorToSend = {
@@ -119,8 +118,6 @@ const FleetManagerView = () => {
         operatorId: "",
         name: "",
         fuelEfficiency: 80,
-        estimatedTime: 8,
-        actualTime: 8,
         safetyViolations: 0,
         tasksCompleted: 0,
         trainingCompleted: false
@@ -353,13 +350,7 @@ const FleetManagerView = () => {
                     <label className="block text-sm font-medium">Name
                       <Input required value={newOperator.name} onChange={e => setNewOperator(o => ({ ...o, name: e.target.value }))} />
                     </label>
-                    {/* Score is auto-calculated */}
-                    <label className="block text-sm font-medium">Estimated Time (hours)
-                      <Input required type="number" value={newOperator.estimatedTime} onChange={e => setNewOperator(o => ({ ...o, estimatedTime: Number(e.target.value) }))} />
-                    </label>
-                    <label className="block text-sm font-medium">Actual Time (hours)
-                      <Input required type="number" value={newOperator.actualTime} onChange={e => setNewOperator(o => ({ ...o, actualTime: Number(e.target.value) }))} />
-                    </label>
+                    {/* Score is auto-calculated; removed Estimated Time and Actual Time fields */}
                     <label className="block text-sm font-medium">Fuel Efficiency
                       <Input required type="number" value={newOperator.fuelEfficiency} onChange={e => setNewOperator(o => ({ ...o, fuelEfficiency: Number(e.target.value) }))} />
                     </label>
