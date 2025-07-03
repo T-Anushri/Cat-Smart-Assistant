@@ -1,0 +1,18 @@
+[
+  {
+    "title": "Excavation - North Pit",
+    "complexityScore": 3,
+    "priority": "urgent",
+    "status": "pending",
+    "estimatedTime": 8,
+    "actualTime": null
+  },
+  {
+    "title": "Material Transport - Route B",
+    "complexityScore": 2,
+    "priority": "normal",
+    "status": "pending",
+    "estimatedTime": 6,
+    "actualTime": null
+  }
+]

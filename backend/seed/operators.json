@@ -1,0 +1,29 @@
+[
+  {
+    "operatorId": "OP1001",
+    "name": "John Smith",
+    "score": 87,
+    "fuelEfficiency": 90,
+    "safetyViolations": 0,
+    "tasksCompleted": 12,
+    "trainingCompleted": true
+  },
+  {
+    "operatorId": "OP1002",
+    "name": "Maria Garcia",
+    "score": 92,
+    "fuelEfficiency": 95,
+    "safetyViolations": 1,
+    "tasksCompleted": 15,
+    "trainingCompleted": false
+  },
+  {
+    "operatorId": "OP1003",
+    "name": "David Johnson",
+    "score": 78,
+    "fuelEfficiency": 85,
+    "safetyViolations": 2,
+    "tasksCompleted": 8,
+    "trainingCompleted": false
+  }
+]

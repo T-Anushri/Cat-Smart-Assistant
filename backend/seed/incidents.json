@@ -1,0 +1,14 @@
+[
+  {
+    "operatorName": "David Johnson",
+    "type": "Speed Violation",
+    "timestamp": "2024-01-15T00:00:00.000Z",
+    "description": "Exceeded speed limit in work zone."
+  },
+  {
+    "operatorName": "Maria Garcia",
+    "type": "Maintenance Alert",
+    "timestamp": "2024-01-14T00:00:00.000Z",
+    "description": "Missed scheduled maintenance."
+  }
+]
