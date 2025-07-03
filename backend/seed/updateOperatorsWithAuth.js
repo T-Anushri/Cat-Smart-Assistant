@@ -3,7 +3,7 @@ import Operator from "../src/models/Operator.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://Anushri:6264@cluster0.iiihj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const MONGO_URI = "mongodb+srv://Anushri:6264@cluster0.iiihj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 async function updateOperators() {
   await mongoose.connect(MONGO_URI);
