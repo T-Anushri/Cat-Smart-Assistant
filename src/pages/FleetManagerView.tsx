@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Users, Settings, FileText, TrendingUp, AlertTriangle, CheckCircle } from "lucide-react";
 
-
 const FleetManagerView = () => {
   const [operators, setOperators] = useState([]);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -40,27 +39,6 @@ const FleetManagerView = () => {
     actualTime: null
   });
   const [addingTask, setAddingTask] = useState(false);
-
-  // Manager login/logout state (no backend)
-  const [managerLoggedIn, setManagerLoggedIn] = useState(false);
-  const [managerLoginOpen, setManagerLoginOpen] = useState(false);
-  const [managerEmail, setManagerEmail] = useState("");
-  const [managerPassword, setManagerPassword] = useState("");
-  const [managerLoginError, setManagerLoginError] = useState("");
-
-  const handleManagerLogin = (e) => {
-    e.preventDefault();
-    // Simple hardcoded check (no backend)
-    if (managerEmail === "manager@cat.com" && managerPassword === "cat123") {
-      setManagerLoggedIn(true);
-      setManagerLoginOpen(false);
-      setManagerEmail("");
-      setManagerPassword("");
-      setManagerLoginError("");
-    } else {
-      setManagerLoginError("Invalid credentials. Try manager@cat.com / cat123");
-    }
-  };
 
   const handleAddTask = async (e) => {
     e.preventDefault();
@@ -159,34 +137,6 @@ const FleetManagerView = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Manager Login Modal */}
-      {(!managerLoggedIn || managerLoginOpen) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-xs flex flex-col gap-4">
-            <h2 className="text-lg font-bold mb-2">Manager Login</h2>
-            <form onSubmit={handleManagerLogin} className="flex flex-col gap-3">
-              <input
-                type="email"
-                placeholder="Email"
-                className="border rounded px-3 py-2"
-                value={managerEmail}
-                onChange={e => setManagerEmail(e.target.value)}
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                className="border rounded px-3 py-2"
-                value={managerPassword}
-                onChange={e => setManagerPassword(e.target.value)}
-                required
-              />
-              {managerLoginError && <div className="text-red-500 text-xs">{managerLoginError}</div>}
-              <Button type="submit" className="w-full">Login</Button>
-            </form>
-          </div>
-        </div>
-      )}
       {/* Header */}
       <header className="bg-secondary text-secondary-foreground p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -203,42 +153,31 @@ const FleetManagerView = () => {
             <Settings className="w-5 h-5" />
             <div className="flex items-center space-x-2">
               <Users className="w-5 h-5" />
-              <span>{managerLoggedIn ? "Fleet Manager" : "Not logged in"}</span>
+              <span>Fleet Manager</span>
             </div>
-            {managerLoggedIn ? (
-              <Button className="ml-4" variant="destructive" onClick={() => setManagerLoggedIn(false)}>
-                Logout
-              </Button>
-            ) : (
-              <Button className="ml-4" variant="default" onClick={() => setManagerLoginOpen(true)}>
-                Login
-              </Button>
-            )}
           </div>
         </div>
       </header>
 
-      {/* Only show dashboard if manager is logged in */}
-      {managerLoggedIn && (
-        <div className="max-w-7xl mx-auto p-6">
-          <Tabs defaultValue="tasks" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="tasks">Task Assignment</TabsTrigger>
-              <TabsTrigger value="operators">Operator Overview</TabsTrigger>
-              <TabsTrigger value="incidents">Incident Logs</TabsTrigger>
-              <TabsTrigger value="utilization">Utilization</TabsTrigger>
-              <TabsTrigger value="reports">Reports</TabsTrigger>
-            </TabsList>
+      <div className="max-w-7xl mx-auto p-6">
+        <Tabs defaultValue="tasks" className="w-full">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="tasks">Task Assignment</TabsTrigger>
+            <TabsTrigger value="operators">Operator Overview</TabsTrigger>
+            <TabsTrigger value="incidents">Incident Logs</TabsTrigger>
+            <TabsTrigger value="utilization">Utilization</TabsTrigger>
+            <TabsTrigger value="reports">Reports</TabsTrigger>
+          </TabsList>
 
-            {/* Task Assignment System */}
-            <TabsContent value="tasks" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between w-full">
-                      <CardTitle>Available Tasks</CardTitle>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={handleAutoAssignTasks} disabled={availableTasks.filter(t => !t.assignedTo).length === 0}>
+          {/* Task Assignment System */}
+          <TabsContent value="tasks" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between w-full">
+                    <CardTitle>Available Tasks</CardTitle>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" onClick={handleAutoAssignTasks} disabled={availableTasks.filter(t => !t.assignedTo).length === 0}>
                         Auto-Assign All Tasks
                       </Button>
                       <Dialog open={addTaskDialogOpen} onOpenChange={setAddTaskDialogOpen}>
@@ -675,7 +614,7 @@ const FleetManagerView = () => {
         </Tabs>
       </div>
     </div>
-      )}
-  }
+  );
+};
 
 export default FleetManagerView;

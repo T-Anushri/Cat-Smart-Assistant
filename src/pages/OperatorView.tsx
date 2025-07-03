@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import VideoPlayer from "../components/VideoPlayer";
+import videoList from "../data/videoList";
 import OperatorLoginModal from "@/components/OperatorLoginModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -587,6 +589,7 @@ const OperatorView = () => {
           {/* Training Center */}
           <TabsContent value="training" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Recommended Training Modules */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
@@ -611,6 +614,7 @@ const OperatorView = () => {
                 </CardContent>
               </Card>
 
+              {/* Certifications */}
               <Card>
                 <CardHeader>
                   <CardTitle>Certifications</CardTitle>
@@ -631,10 +635,33 @@ const OperatorView = () => {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+
+            {/* Video Training Portal - full width below */}
+            <Card className="mt-8">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <BookOpen className="w-5 h-5" />
+                  <span>Video Training Portal</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {videoList.map((video) => (
+                    <VideoPlayer
+                      key={video.id}
+                      videoId={video.id}
+                      title={video.title}
+                      description={video.description}
+                      transcript={video.transcript}
+                    />
+                  ))}
+                </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+  </div>
+</div>
   );
 };
 
