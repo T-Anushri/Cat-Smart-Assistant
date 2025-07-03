@@ -1,13 +1,24 @@
-
-
 import express from "express";
-
 import Task from "../models/Task.js";
 import Operator from "../models/Operator.js";
 import Equipment from "../models/Equipment.js";
 import matchTasks from "../../utils/matchTasks.js";
+import { authenticateToken } from "../middleware/auth.js";
+
 
 const router = express.Router();
+
+// GET /api/tasks/my-tasks (operator only, JWT required)
+router.get("/my-tasks", authenticateToken, async (req, res) => {
+  try {
+    const operatorId = req.user._id;
+    const tasks = await Task.find({ assignedTo: operatorId });
+    res.json({ tasks });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch operator's tasks" });
+  }
+});
+
 
 // Create a POST route /assign-tasks that takes a list of tasks
 // and assigns each one to the best operator based on:
