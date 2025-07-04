@@ -9,10 +9,13 @@
     "build": "echo 'No build step for JS backend'"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.9.0",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.19.2",
-    "mongoose": "^8.3.5"
+    "faker": "^6.6.6",
+    "mongoose": "^8.3.5",
+    "node-cron": "^4.2.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

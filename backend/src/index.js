@@ -27,6 +27,11 @@ app.get("/api/health", (_req, res) => {
 import taskRoutes from "./routes/task.js";
 import operatorRoutes from "./routes/operator.js";
 import incidentRoutes from "./routes/incident.js";
+import { startAlertSimulator, getLatestAlert } from './alertSimulator.js';
+
+app.get('/api/alert', (_req, res) => {
+  res.json({ message: getLatestAlert() });
+});
 
 app.use("/api/tasks", taskRoutes);
 app.use("/api/operators", operatorRoutes);
