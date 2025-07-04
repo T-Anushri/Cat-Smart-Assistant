@@ -15,13 +15,13 @@ let latestAlert = '';
 
 function generateEntry(operatorId, machineId) {
   const timestamp = new Date().toISOString();
-  const fuelUsed = faker.datatype.float({ min: 5, max: 20, precision: 0.01 });
-  const loadCycles = faker.datatype.number({ min: 10, max: 100 });
+  const fuelUsed = faker.number.float({ min: 5, max: 20, precision: 0.01 });
+  const loadCycles = faker.number.int({ min: 10, max: 100 });
   const envConditions = ['normal', 'terrain', 'rainy', 'dusty'];
   const environment = envConditions[Math.floor(Math.random() * envConditions.length)];
-  const proximity = faker.datatype.float({ min: 0, max: 5, precision: 0.01 });
-  const safetyViolations = faker.datatype.number({ min: 0, max: 5 });
-  const idleTime = faker.datatype.number({ min: 0, max: 30 });
+  const proximity = faker.number.float({ min: 0, max: 5, precision: 0.01 });
+  const safetyViolations = faker.number.int({ min: 0, max: 5 });
+  const idleTime = faker.number.int({ min: 0, max: 30 });
   const safetyBelt = Math.random() > 0.2 ? 'Yes' : 'No';
 
   return {
@@ -99,7 +99,7 @@ function startAlertSimulator() {
           operatorId: newEntry.operatorId,
           machineId: newEntry.machineId,
           timestamp: newEntry.timestamp,
-          hitDamagePercent: faker.datatype.float({ min: 1, max: 100, precision: 0.01 })
+        hitDamagePercent: faker.number.float({ min: 1, max: 100, precision: 0.01 })
         };
         let hitData = [];
         if (fs.existsSync(HIT_FILE_JSON)) {

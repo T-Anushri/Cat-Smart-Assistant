@@ -1,0 +1,50 @@
+[
+  {
+    "timestamp": "2025-07-04T06:51:32.123Z",
+    "operatorId": "OP001",
+    "machineId": "MH01",
+    "fuelUsed": 16.77502219740417,
+    "loadCycles": 98,
+    "environment": "rainy",
+    "proximity": 3.78430928035963,
+    "safetyViolations": 4,
+    "idleTime": 3,
+    "safetyBelt": "Yes"
+  },
+  {
+    "timestamp": "2025-07-04T06:51:32.126Z",
+    "operatorId": "OP002",
+    "machineId": "MH02",
+    "fuelUsed": 18.739010130767113,
+    "loadCycles": 85,
+    "environment": "terrain",
+    "proximity": 1.039051635687841,
+    "safetyViolations": 2,
+    "idleTime": 23,
+    "safetyBelt": "Yes"
+  },
+  {
+    "timestamp": "2025-07-04T06:51:32.127Z",
+    "operatorId": "OP003",
+    "machineId": "MH03",
+    "fuelUsed": 8.530202043767362,
+    "loadCycles": 33,
+    "environment": "dusty",
+    "proximity": 3.3715917632650614,
+    "safetyViolations": 2,
+    "idleTime": 28,
+    "safetyBelt": "Yes"
+  },
+  {
+    "timestamp": "2025-07-04T06:51:32.127Z",
+    "operatorId": "OP004",
+    "machineId": "MH04",
+    "fuelUsed": 5.545367972944916,
+    "loadCycles": 44,
+    "environment": "normal",
+    "proximity": 2.533241569010369,
+    "safetyViolations": 3,
+    "idleTime": 22,
+    "safetyBelt": "No"
+  }
+]

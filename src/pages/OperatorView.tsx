@@ -11,6 +11,10 @@ import { Bell, Clock, User, TrendingUp, BookOpen, CheckCircle } from "lucide-rea
 import ChatbotDialog from "@/components/ChatbotDialog";
 import { ResponsiveContainer, LineChart, Line as ReLine, XAxis, YAxis, CartesianGrid, Tooltip as ReTooltip, PieChart, Pie, Cell, BarChart, Bar, Legend as ReLegend } from 'recharts';
 import { Line } from "react-chartjs-2";
+
+// --- Popup Alert & Speech Synthesis Integration ---
+
+// ...existing code...
 import {
   Chart as ChartJS,
   LineElement,
@@ -268,6 +272,8 @@ const OperatorView = () => {
     return () => clearInterval(interval);
   }, [fuelConsumption]);
 
+  // ...existing code...
+
   return (
     <div className="min-h-screen bg-background">
       {/* Popup Alert */}
@@ -335,6 +341,7 @@ const OperatorView = () => {
               <User className="w-5 h-5" />
               <span>{operator ? operator.name : "Not logged in"}</span>
             </div>
+            {/* Manager Emergency Alerts Button (REMOVED) */}
             {operator && (
               <>
                 <span className="text-sm flex items-center gap-1"><TrendingUp className="w-4 h-4" /> Score: {operator.score ?? "-"}</span>
@@ -349,6 +356,30 @@ const OperatorView = () => {
                 >
                   Logout
                 </Button>
+                <Button
+                  className="ml-4"
+                  variant="outline"
+                  style={{ borderColor: 'red', color: 'red' }}
+                  onClick={async () => {
+                    if (!operator?._id) return;
+                    try {
+                      const res = await fetch("http://localhost:4000/api/emergency-alert", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ operatorId: operator._id })
+                      });
+                      if (res.ok) {
+                        alert("Emergency alert sent to manager!");
+                      } else {
+                        alert("Failed to send emergency alert.");
+                      }
+                    } catch {
+                      alert("Failed to send emergency alert.");
+                    }
+                  }}
+                >
+                  🚨 Emergency
+                </Button>
               </>
             )}
             {!operator && (
@@ -359,6 +390,8 @@ const OperatorView = () => {
           </div>
         </div>
       </header>
+
+      {/* Emergency Alerts Modal (Manager) REMOVED */}
 
       <div className="max-w-7xl mx-auto p-6">
         <Tabs defaultValue="home" className="w-full">

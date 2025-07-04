@@ -17,7 +17,10 @@ const ChatbotDialog = () => {
   ]);
   const [input, setInput] = useState("");
 
-  const handleSend = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage: Message = {
@@ -26,14 +29,34 @@ const ChatbotDialog = () => {
       sender: 'user'
     };
 
-    const botResponse: Message = {
-      id: messages.length + 2,
-      text: "Thanks for your question! This is a demo chatbot. In a real implementation, this would connect to your training knowledge base.",
-      sender: 'bot'
-    };
-
-    setMessages(prev => [...prev, userMessage, botResponse]);
+    setMessages(prev => [...prev, userMessage]);
     setInput("");
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("http://localhost:4000/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: input })
+      });
+      if (!res.ok) throw new Error("Failed to get response from assistant");
+      const data = await res.json();
+      const botMessage: Message = {
+        id: messages.length + 2,
+        text: data.response || "(No response)",
+        sender: 'bot'
+      };
+      setMessages(prev => [...prev, botMessage]);
+    } catch (err: any) {
+      setError(err.message || "Unknown error");
+      setMessages(prev => [...prev, {
+        id: messages.length + 2,
+        text: "Sorry, I couldn't get a response. Please try again.",
+        sender: 'bot'
+      }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -69,6 +92,20 @@ const ChatbotDialog = () => {
                 </div>
               </div>
             ))}
+            {loading && (
+              <div className="flex justify-start">
+                <div className="max-w-[80%] p-3 rounded-lg text-sm bg-muted opacity-70 italic">
+                  Assistant is typing...
+                </div>
+              </div>
+            )}
+            {error && (
+              <div className="flex justify-start">
+                <div className="max-w-[80%] p-3 rounded-lg text-sm bg-red-100 text-red-700">
+                  {error}
+                </div>
+              </div>
+            )}
           </div>
         </ScrollArea>
         <div className="flex gap-2 pt-4">
